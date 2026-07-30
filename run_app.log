@@ -1,0 +1,17 @@
+INFO:     Started server process [65869]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:37080 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42058 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42068 - "GET /assets/index-2r8ivyqB.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42058 - "GET /assets/index-0dwowCeE.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42058 - "GET /api/products HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42058 - "GET /api/providers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42058 - "GET /api/sales HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42058 - "GET /api/purchases HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [65869]
+🚀 Iniciando la aplicación web de StockWise...
