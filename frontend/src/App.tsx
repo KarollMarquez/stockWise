@@ -54,14 +54,14 @@ export default function App() {
       {/* Sidebar */}
       <div style={{
         width: '260px',
-        backgroundColor: '#1f2937',
+        backgroundColor: '#18181b',
         color: 'white',
         display: 'flex',
         flexDirection: 'column',
         padding: '20px 0'
       }}>
         <div style={{ padding: '0 20px 20px', borderBottom: '1px solid #374151', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <Package size={28} color="#3b82f6" />
+          <Package size={28} color="#d4d4d8" />
           <span style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>StockWise Web</span>
         </div>
 
@@ -77,6 +77,7 @@ export default function App() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
+              className="nav-btn"
               style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -84,13 +85,13 @@ export default function App() {
                 padding: '12px 16px',
                 borderRadius: '8px',
                 border: 'none',
-                backgroundColor: activeTab === tab.id ? '#3b82f6' : 'transparent',
-                color: 'white',
+                backgroundColor: activeTab === tab.id ? '#3f3f46' : 'transparent',
+                color: activeTab === tab.id ? '#ffffff' : '#a1a1aa',
                 cursor: 'pointer',
                 textAlign: 'left',
                 fontSize: '0.95rem',
                 fontWeight: activeTab === tab.id ? '600' : '400',
-                transition: 'background-color 0.2s'
+                transition: 'background-color 0.15s, color 0.15s'
               }}
             >
               {tab.icon}
@@ -172,7 +173,7 @@ function HomeView({ products, providers, sales, purchases }: { products: Product
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px' }}>
         {[
-          { title: "Productos", value: totalProducts, icon: <Package size={32} color="#3b82f6" />, bg: '#eff6ff' },
+          { title: "Productos", value: totalProducts, icon: <Package size={32} color="#3f3f46" />, bg: '#f4f4f5' },
           { title: "Proveedores", value: totalProviders, icon: <Truck size={32} color="#10b981" />, bg: '#ecfdf5' },
           { title: "Unidades Vendidas", value: totalSales, icon: <TrendingUp size={32} color="#f59e0b" />, bg: '#fffbeb' },
           { title: "Unidades Compradas", value: totalPurchases, icon: <ShoppingCart size={32} color="#ef4444" />, bg: '#fef2f2' }
@@ -240,7 +241,7 @@ const labelStyle: React.CSSProperties = {
 };
 
 const primaryButtonStyle: React.CSSProperties = {
-  backgroundColor: '#3b82f6',
+  backgroundColor: '#27272a',
   color: 'white',
   border: 'none',
   padding: '10px 18px',
@@ -397,12 +398,12 @@ function ProductsView({ products, onRefresh }: { products: Product[], onRefresh:
               <tr key={p.idProducto} style={{ borderBottom: idx < filteredProducts.length - 1 ? '1px solid #e5e7eb' : 'none' }}>
                 <td style={{ padding: '16px 20px', fontWeight: '600', color: '#111827' }}>{p.idProducto}</td>
                 <td style={{ padding: '16px 20px' }}>{p.nombre}</td>
-                <td style={{ padding: '16px 20px' }}><span style={{ backgroundColor: '#e0f2fe', color: '#0369a1', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: '500' }}>{p.categoria}</span></td>
+                <td style={{ padding: '16px 20px' }}><span style={{ backgroundColor: '#f4f4f5', color: '#3f3f46', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: '500' }}>{p.categoria}</span></td>
                 <td style={{ padding: '16px 20px', fontWeight: '500' }}>${p.precio.toFixed(2)}</td>
                 <td style={{ padding: '16px 20px' }}><span style={{ color: p.stock <= 20 ? '#ef4444' : '#111827', fontWeight: '600' }}>{p.stock}</span></td>
                 <td style={{ padding: '16px 20px', color: '#4b5563', maxWidth: '250px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.descripcion}</td>
                 <td style={{ padding: '16px 20px', display: 'flex', gap: '10px' }}>
-                  <button onClick={() => openEditModal(p)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: '#3b82f6' }}><Edit2 size={18} /></button>
+                  <button onClick={() => openEditModal(p)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: '#3f3f46' }}><Edit2 size={18} /></button>
                   <button onClick={() => handleDelete(p.idProducto)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: '#ef4444' }}><Trash2 size={18} /></button>
                 </td>
               </tr>
@@ -559,7 +560,7 @@ function ProvidersView({ providers, onRefresh }: { providers: Provider[], onRefr
                 <td style={{ padding: '16px 20px' }}>{p.contacto}</td>
                 <td style={{ padding: '16px 20px', color: '#4b5563' }}>{p.direccion}</td>
                 <td style={{ padding: '16px 20px', display: 'flex', gap: '10px' }}>
-                  <button onClick={() => openEditModal(p)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: '#3b82f6' }}><Edit2 size={18} /></button>
+                  <button onClick={() => openEditModal(p)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: '#3f3f46' }}><Edit2 size={18} /></button>
                   <button onClick={() => handleDelete(p.idProveedor)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: '#ef4444' }}><Trash2 size={18} /></button>
                 </td>
               </tr>
@@ -951,7 +952,7 @@ function ReportsView() {
               padding: '10px 18px',
               borderRadius: '6px',
               border: reportType === btn.id ? 'none' : '1px solid #d1d5db',
-              backgroundColor: reportType === btn.id ? '#3b82f6' : 'white',
+              backgroundColor: reportType === btn.id ? '#27272a' : 'white',
               color: reportType === btn.id ? 'white' : '#374151',
               cursor: 'pointer',
               fontWeight: '600'
@@ -1019,7 +1020,7 @@ function ReportsView() {
                   {(reportData as FrequentProvider[]).map((prov, idx) => (
                     <div key={prov.idProveedor} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#f9fafb', padding: '15px 20px', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                        <span style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#3b82f6' }}>#{idx+1}</span>
+                        <span style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#3f3f46' }}>#{idx+1}</span>
                         <div>
                           <h4 style={{ margin: 0, fontSize: '1.05rem' }}>Proveedor {prov.idProveedor}</h4>
                         </div>

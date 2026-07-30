@@ -51,3 +51,12 @@ body {
     color: #f9fafb;
   }
 }
+
+.nav-btn:hover {
+  background-color: #27272a !important;
+  color: #ffffff !important;
+}
+
+table tbody tr:hover {
+  background-color: #fafafa;
+}
