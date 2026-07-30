@@ -14,6 +14,10 @@ import {
 } from 'lucide-react';
 
 // Define Interfaces for strict TS compatibility
+// Base URL for the backend API. Empty string keeps using the Vite dev proxy locally;
+// in production (Vercel) this points at the Railway-hosted FastAPI backend.
+const API_BASE = import.meta.env.VITE_API_URL || '';
+
 interface Product {
   idProducto: string;
   nombre: string;
@@ -122,19 +126,19 @@ function DashboardContent({ activeTab }: { activeTab: string }) {
 
   const fetchData = async () => {
     try {
-      const pRes = await fetch('/api/products');
+      const pRes = await fetch(`${API_BASE}/api/products`);
       const pData = await pRes.json();
       setProducts(pData);
 
-      const prRes = await fetch('/api/providers');
+      const prRes = await fetch(`${API_BASE}/api/providers`);
       const prData = await prRes.json();
       setProviders(prData);
 
-      const sRes = await fetch('/api/sales');
+      const sRes = await fetch(`${API_BASE}/api/sales`);
       const sData = await sRes.json();
       setSales(sData);
 
-      const puRes = await fetch('/api/purchases');
+      const puRes = await fetch(`${API_BASE}/api/purchases`);
       const puData = await puRes.json();
       setPurchases(puData);
     } catch (e) {
@@ -160,6 +164,32 @@ function DashboardContent({ activeTab }: { activeTab: string }) {
   }
 }
 
+// Reusable page header with a colored emoji badge, like a friendly section title
+function PageHeader({ emoji, title, subtitle, bg }: { emoji: string, title: string, subtitle: string, bg: string }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px', marginBottom: '25px' }}>
+      <div style={{
+        backgroundColor: bg,
+        borderRadius: '16px',
+        width: '56px',
+        height: '56px',
+        minWidth: '56px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: '1.75rem',
+        boxShadow: '0 2px 6px rgba(0,0,0,0.06)'
+      }}>
+        {emoji}
+      </div>
+      <div>
+        <h1 style={{ margin: 0, fontSize: '2.1rem', fontWeight: 800, color: '#18181b', letterSpacing: '-0.02em' }}>{title}</h1>
+        <p style={{ margin: '4px 0 0 0', color: '#6b7280', fontSize: '1rem' }}>{subtitle}</p>
+      </div>
+    </div>
+  );
+}
+
 function HomeView({ products, providers, sales, purchases }: { products: Product[], providers: Provider[], sales: Sale[], purchases: Purchase[] }) {
   const totalProducts = products.length;
   const totalProviders = providers.length;
@@ -168,19 +198,18 @@ function HomeView({ products, providers, sales, purchases }: { products: Product
 
   return (
     <div>
-      <h1 style={{ margin: '0 0 10px 0', fontSize: '2rem', color: '#1f2937' }}>🏠 Home</h1>
-      <p style={{ margin: '0 0 30px 0', color: '#4b5563' }}>Bienvenido al StockWise Web Dashboard. Administre todo su inventario y transacciones.</p>
+      <PageHeader emoji="🏠" title="Home" subtitle="Bienvenido al StockWise Web Dashboard. Administre todo su inventario y transacciones." bg="#ede9fe" />
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px' }}>
         {[
-          { title: "Productos", value: totalProducts, icon: <Package size={32} color="#3f3f46" />, bg: '#f4f4f5' },
-          { title: "Proveedores", value: totalProviders, icon: <Truck size={32} color="#10b981" />, bg: '#ecfdf5' },
-          { title: "Unidades Vendidas", value: totalSales, icon: <TrendingUp size={32} color="#f59e0b" />, bg: '#fffbeb' },
-          { title: "Unidades Compradas", value: totalPurchases, icon: <ShoppingCart size={32} color="#ef4444" />, bg: '#fef2f2' }
+          { title: "Productos", emoji: "📦", value: totalProducts, bg: '#dbeafe' },
+          { title: "Proveedores", emoji: "🚚", value: totalProviders, bg: '#dcfce7' },
+          { title: "Unidades Vendidas", emoji: "📈", value: totalSales, bg: '#fef3c7' },
+          { title: "Unidades Compradas", emoji: "🛒", value: totalPurchases, bg: '#fee2e2' }
         ].map((card, idx) => (
-          <div key={idx} style={{
+          <div key={idx} className="card-lift" style={{
             backgroundColor: 'white',
-            borderRadius: '12px',
+            borderRadius: '16px',
             padding: '24px',
             boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
             display: 'flex',
@@ -188,11 +217,11 @@ function HomeView({ products, providers, sales, purchases }: { products: Product
             alignItems: 'center'
           }}>
             <div>
-              <span style={{ fontSize: '0.9rem', color: '#6b7280', textTransform: 'uppercase', fontWeight: '600' }}>{card.title}</span>
-              <h2 style={{ fontSize: '2rem', margin: '5px 0 0 0', color: '#111827' }}>{card.value}</h2>
+              <span style={{ fontSize: '0.85rem', color: '#6b7280', textTransform: 'uppercase', fontWeight: '700', letterSpacing: '0.03em' }}>{card.title}</span>
+              <h2 style={{ fontSize: '2.25rem', margin: '5px 0 0 0', color: '#111827', fontWeight: 800 }}>{card.value}</h2>
             </div>
-            <div style={{ backgroundColor: card.bg, padding: '12px', borderRadius: '50%' }}>
-              {card.icon}
+            <div style={{ backgroundColor: card.bg, width: '52px', height: '52px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '14px', fontSize: '1.5rem' }}>
+              {card.emoji}
             </div>
           </div>
         ))}
@@ -218,18 +247,19 @@ const modalOverlayStyle: React.CSSProperties = {
 const modalContainerStyle: React.CSSProperties = {
   backgroundColor: 'white',
   padding: '30px',
-  borderRadius: '12px',
+  borderRadius: '18px',
   width: '500px',
-  boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+  boxShadow: '0 10px 30px rgba(0,0,0,0.15)'
 };
 
 const inputStyle: React.CSSProperties = {
   width: '100%',
-  padding: '10px',
-  borderRadius: '6px',
+  padding: '10px 12px',
+  borderRadius: '8px',
   border: '1px solid #d1d5db',
   boxSizing: 'border-box',
-  marginBottom: '15px'
+  marginBottom: '15px',
+  transition: 'border-color 0.15s, box-shadow 0.15s'
 };
 
 const labelStyle: React.CSSProperties = {
@@ -258,6 +288,17 @@ const secondaryButtonStyle: React.CSSProperties = {
   borderRadius: '6px',
   cursor: 'pointer',
   fontWeight: '600'
+};
+
+const CATEGORY_COLORS: Record<string, { bg: string, color: string }> = {
+  "Belleza": { bg: '#fce7f3', color: '#be185d' },
+  "Tecnología": { bg: '#dbeafe', color: '#1d4ed8' },
+  "Alimentos": { bg: '#fef3c7', color: '#b45309' },
+  "Ropa y Calzado": { bg: '#ede9fe', color: '#6d28d9' },
+  "Electrónica": { bg: '#cffafe', color: '#0e7490' },
+  "Hogar": { bg: '#dcfce7', color: '#15803d' },
+  "Deportes": { bg: '#fee2e2', color: '#b91c1c' },
+  "Juguetes": { bg: '#ffedd5', color: '#c2410c' },
 };
 
 // ---------------- PRODUCTS ----------------
@@ -312,7 +353,7 @@ function ProductsView({ products, onRefresh }: { products: Product[], onRefresh:
       descripcion
     };
 
-    const url = editProduct ? `/api/products/${editProduct.idProducto}` : '/api/products';
+    const url = editProduct ? `${API_BASE}/api/products/${editProduct.idProducto}` : `${API_BASE}/api/products`;
     const method = editProduct ? 'PUT' : 'POST';
 
     const res = await fetch(url, {
@@ -332,7 +373,7 @@ function ProductsView({ products, onRefresh }: { products: Product[], onRefresh:
 
   const handleDelete = async (id: string) => {
     if (confirm(`¿Seguro que deseas eliminar el producto ${id}?`)) {
-      const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
+      const res = await fetch(`${API_BASE}/api/products/${id}`, { method: 'DELETE' });
       if (res.ok) {
         onRefresh();
       }
@@ -347,13 +388,10 @@ function ProductsView({ products, onRefresh }: { products: Product[], onRefresh:
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <div>
-          <h1 style={{ margin: '0 0 5px 0', fontSize: '2rem', color: '#1f2937' }}>📦 Productos</h1>
-          <p style={{ margin: 0, color: '#4b5563' }}>Visualice y gestione todo el catálogo de productos</p>
-        </div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
+        <PageHeader emoji="📦" title="Productos" subtitle="Visualice y gestione todo el catálogo de productos" bg="#dbeafe" />
         <button onClick={openAddModal} style={{ ...primaryButtonStyle, display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Plus size={18} /> Añadir Producto
+          <Plus size={18} /> ✨ Añadir Producto
         </button>
       </div>
 
@@ -398,7 +436,7 @@ function ProductsView({ products, onRefresh }: { products: Product[], onRefresh:
               <tr key={p.idProducto} style={{ borderBottom: idx < filteredProducts.length - 1 ? '1px solid #e5e7eb' : 'none' }}>
                 <td style={{ padding: '16px 20px', fontWeight: '600', color: '#111827' }}>{p.idProducto}</td>
                 <td style={{ padding: '16px 20px' }}>{p.nombre}</td>
-                <td style={{ padding: '16px 20px' }}><span style={{ backgroundColor: '#f4f4f5', color: '#3f3f46', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: '500' }}>{p.categoria}</span></td>
+                <td style={{ padding: '16px 20px' }}><span style={{ backgroundColor: (CATEGORY_COLORS[p.categoria] || { bg: '#f4f4f5' }).bg, color: (CATEGORY_COLORS[p.categoria] || { color: '#3f3f46' }).color, padding: '4px 10px', borderRadius: '999px', fontSize: '0.8rem', fontWeight: '600' }}>{p.categoria}</span></td>
                 <td style={{ padding: '16px 20px', fontWeight: '500' }}>${p.precio.toFixed(2)}</td>
                 <td style={{ padding: '16px 20px' }}><span style={{ color: p.stock <= 20 ? '#ef4444' : '#111827', fontWeight: '600' }}>{p.stock}</span></td>
                 <td style={{ padding: '16px 20px', color: '#4b5563', maxWidth: '250px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.descripcion}</td>
@@ -417,7 +455,7 @@ function ProductsView({ products, onRefresh }: { products: Product[], onRefresh:
         <div style={modalOverlayStyle}>
           <div style={modalContainerStyle}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h2 style={{ margin: 0, fontSize: '1.25rem' }}>{editProduct ? 'Editar Producto' : 'Añadir Producto'}</h2>
+              <h2 style={{ margin: 0, fontSize: '1.35rem', fontWeight: 700 }}>{editProduct ? '✏️ Editar Producto' : '✨ Añadir Producto'}</h2>
               <button onClick={() => setModalOpen(false)} style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}><X size={20} /></button>
             </div>
 
@@ -504,7 +542,7 @@ function ProvidersView({ providers, onRefresh }: { providers: Provider[], onRefr
     }
 
     const payload = { nombre, contacto, direccion };
-    const url = editProvider ? `/api/providers/${editProvider.idProveedor}` : '/api/providers';
+    const url = editProvider ? `${API_BASE}/api/providers/${editProvider.idProveedor}` : `${API_BASE}/api/providers`;
     const method = editProvider ? 'PUT' : 'POST';
 
     const res = await fetch(url, {
@@ -524,7 +562,7 @@ function ProvidersView({ providers, onRefresh }: { providers: Provider[], onRefr
 
   const handleDelete = async (id: string) => {
     if (confirm(`¿Seguro que deseas eliminar el proveedor ${id}?`)) {
-      const res = await fetch(`/api/providers/${id}`, { method: 'DELETE' });
+      const res = await fetch(`${API_BASE}/api/providers/${id}`, { method: 'DELETE' });
       if (res.ok) {
         onRefresh();
       }
@@ -533,13 +571,10 @@ function ProvidersView({ providers, onRefresh }: { providers: Provider[], onRefr
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <div>
-          <h1 style={{ margin: '0 0 5px 0', fontSize: '2rem', color: '#1f2937' }}>🚚 Proveedores</h1>
-          <p style={{ margin: 0, color: '#4b5563' }}>Gestión de la red de proveedores</p>
-        </div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
+        <PageHeader emoji="🚚" title="Proveedores" subtitle="Gestión de la red de proveedores" bg="#dcfce7" />
         <button onClick={openAddModal} style={{ ...primaryButtonStyle, display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Plus size={18} /> Añadir Proveedor
+          <Plus size={18} /> ✨ Añadir Proveedor
         </button>
       </div>
 
@@ -573,7 +608,7 @@ function ProvidersView({ providers, onRefresh }: { providers: Provider[], onRefr
         <div style={modalOverlayStyle}>
           <div style={modalContainerStyle}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h2 style={{ margin: 0, fontSize: '1.25rem' }}>{editProvider ? 'Editar Proveedor' : 'Añadir Proveedor'}</h2>
+              <h2 style={{ margin: 0, fontSize: '1.35rem', fontWeight: 700 }}>{editProvider ? '✏️ Editar Proveedor' : '✨ Añadir Proveedor'}</h2>
               <button onClick={() => setModalOpen(false)} style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}><X size={20} /></button>
             </div>
 
@@ -625,7 +660,7 @@ function SalesView({ sales, products, onRefresh }: { sales: Sale[], products: Pr
       cantidad: parseInt(cantidad) || 0
     };
 
-    const res = await fetch('/api/sales', {
+    const res = await fetch(`${API_BASE}/api/sales`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
@@ -642,7 +677,7 @@ function SalesView({ sales, products, onRefresh }: { sales: Sale[], products: Pr
 
   const handleDelete = async (id: string) => {
     if (confirm(`¿Seguro que deseas eliminar la venta ${id}?`)) {
-      const res = await fetch(`/api/sales/${id}`, { method: 'DELETE' });
+      const res = await fetch(`${API_BASE}/api/sales/${id}`, { method: 'DELETE' });
       if (res.ok) {
         onRefresh();
       }
@@ -651,13 +686,10 @@ function SalesView({ sales, products, onRefresh }: { sales: Sale[], products: Pr
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <div>
-          <h1 style={{ margin: '0 0 5px 0', fontSize: '2rem', color: '#1f2937' }}>💰 Ventas</h1>
-          <p style={{ margin: 0, color: '#4b5563' }}>Historial y registro de transacciones de salida (Ventas)</p>
-        </div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
+        <PageHeader emoji="💰" title="Ventas" subtitle="Historial y registro de transacciones de salida (Ventas)" bg="#fef3c7" />
         <button onClick={openAddModal} style={{ ...primaryButtonStyle, display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Plus size={18} /> Nueva Venta
+          <Plus size={18} /> ✨ Nueva Venta
         </button>
       </div>
 
@@ -691,7 +723,7 @@ function SalesView({ sales, products, onRefresh }: { sales: Sale[], products: Pr
         <div style={modalOverlayStyle}>
           <div style={modalContainerStyle}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h2 style={{ margin: 0, fontSize: '1.25rem' }}>Registrar Venta</h2>
+              <h2 style={{ margin: 0, fontSize: '1.35rem', fontWeight: 700 }}>💰 Registrar Venta</h2>
               <button onClick={() => setModalOpen(false)} style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}><X size={20} /></button>
             </div>
 
@@ -747,7 +779,7 @@ function PurchasesView({ purchases, products, providers, onRefresh }: { purchase
       cantidad: parseInt(cantidad) || 0
     };
 
-    const res = await fetch('/api/purchases', {
+    const res = await fetch(`${API_BASE}/api/purchases`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
@@ -764,7 +796,7 @@ function PurchasesView({ purchases, products, providers, onRefresh }: { purchase
 
   const handleDelete = async (id: string) => {
     if (confirm(`¿Seguro que deseas eliminar la compra ${id}?`)) {
-      const res = await fetch(`/api/purchases/${id}`, { method: 'DELETE' });
+      const res = await fetch(`${API_BASE}/api/purchases/${id}`, { method: 'DELETE' });
       if (res.ok) {
         onRefresh();
       }
@@ -773,13 +805,10 @@ function PurchasesView({ purchases, products, providers, onRefresh }: { purchase
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <div>
-          <h1 style={{ margin: '0 0 5px 0', fontSize: '2rem', color: '#1f2937' }}>🛒 Compras</h1>
-          <p style={{ margin: 0, color: '#4b5563' }}>Historial y registro de transacciones de entrada (Compras)</p>
-        </div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
+        <PageHeader emoji="🛒" title="Compras" subtitle="Historial y registro de transacciones de entrada (Compras)" bg="#fee2e2" />
         <button onClick={openAddModal} style={{ ...primaryButtonStyle, display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Plus size={18} /> Nueva Compra
+          <Plus size={18} /> ✨ Nueva Compra
         </button>
       </div>
 
@@ -813,7 +842,7 @@ function PurchasesView({ purchases, products, providers, onRefresh }: { purchase
         <div style={modalOverlayStyle}>
           <div style={modalContainerStyle}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h2 style={{ margin: 0, fontSize: '1.25rem' }}>Registrar Compra</h2>
+              <h2 style={{ margin: 0, fontSize: '1.35rem', fontWeight: 700 }}>🛒 Registrar Compra</h2>
               <button onClick={() => setModalOpen(false)} style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}><X size={20} /></button>
             </div>
 
@@ -892,11 +921,11 @@ function ReportsView() {
 
     let url = '';
     if (type === 'low-stock') {
-      url = '/api/reports/low-stock';
+      url = `${API_BASE}/api/reports/low-stock`;
     } else if (type === 'frequent-providers') {
-      url = '/api/reports/frequent-providers';
+      url = `${API_BASE}/api/reports/frequent-providers`;
     } else if (type === 'best-sellers') {
-      url = '/api/reports/best-sellers';
+      url = `${API_BASE}/api/reports/best-sellers`;
     } else {
       return;
     }
@@ -916,7 +945,7 @@ function ReportsView() {
       setErrorMsg("Especifique ambas fechas");
       return;
     }
-    const res = await fetch(`/api/reports/sales-by-period?start_date=${startDate}&end_date=${endDate}`);
+    const res = await fetch(`${API_BASE}/api/reports/sales-by-period?start_date=${startDate}&end_date=${endDate}`);
     if (res.ok) {
       const data = await res.json();
       setReportData(data);
@@ -927,19 +956,19 @@ function ReportsView() {
 
   return (
     <div>
-      <h1 style={{ margin: '0 0 5px 0', fontSize: '2rem', color: '#1f2937' }}>📑 Reportes</h1>
-      <p style={{ margin: '0 0 25px 0', color: '#4b5563' }}>Visualización interactiva de métricas del inventario</p>
+      <PageHeader emoji="📑" title="Reportes" subtitle="Visualización interactiva de métricas del inventario" bg="#fce7f3" />
 
       {/* Selector */}
-      <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap', marginBottom: '25px' }}>
+      <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: '25px' }}>
         {[
-          { id: 'low-stock', label: 'Menor Stock (<= 20)' },
-          { id: 'frequent-providers', label: 'Proveedores Frecuentes' },
-          { id: 'sales-period', label: 'Ventas por período' },
-          { id: 'best-sellers', label: 'Más vendidos (4+ unidades)' }
+          { id: 'low-stock', label: 'Menor Stock (≤ 20)', emoji: '📉' },
+          { id: 'frequent-providers', label: 'Proveedores Frecuentes', emoji: '🏢' },
+          { id: 'sales-period', label: 'Ventas por período', emoji: '📅' },
+          { id: 'best-sellers', label: 'Más vendidos (4+ unidades)', emoji: '🔥' }
         ].map(btn => (
           <button
             key={btn.id}
+            className="pill-btn"
             onClick={() => {
               if (btn.id === 'sales-period') {
                 setReportType('sales-period');
@@ -949,16 +978,18 @@ function ReportsView() {
               }
             }}
             style={{
-              padding: '10px 18px',
-              borderRadius: '6px',
-              border: reportType === btn.id ? 'none' : '1px solid #d1d5db',
-              backgroundColor: reportType === btn.id ? '#27272a' : 'white',
-              color: reportType === btn.id ? 'white' : '#374151',
+              padding: '11px 20px',
+              borderRadius: '999px',
+              border: reportType === btn.id ? 'none' : '1px solid #e4e4e7',
+              backgroundColor: reportType === btn.id ? '#7c3aed' : 'white',
+              color: reportType === btn.id ? 'white' : '#3f3f46',
               cursor: 'pointer',
-              fontWeight: '600'
+              fontWeight: '600',
+              fontSize: '0.92rem',
+              boxShadow: reportType === btn.id ? '0 2px 8px rgba(124,58,237,0.35)' : '0 1px 2px rgba(0,0,0,0.04)'
             }}
           >
-            {btn.label}
+            {btn.emoji} {btn.label}
           </button>
         ))}
       </div>

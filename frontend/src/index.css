@@ -60,3 +60,27 @@ body {
 table tbody tr:hover {
   background-color: #fafafa;
 }
+
+input:focus, select:focus, textarea:focus {
+  outline: none !important;
+  border-color: #7c3aed !important;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15) !important;
+}
+
+.pill-btn {
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.pill-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.card-lift {
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.card-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+}
